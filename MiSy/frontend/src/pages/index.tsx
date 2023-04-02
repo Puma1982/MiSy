@@ -9,11 +9,19 @@ import Chat from '../components/Chat/Chat';
 
 
 const Home: NextPage = () => {
-  const { data } = useSession();
+  const { data : session }  = useSession();
 
-  console.log('HERE IS DATA', data);
+  console.log('HERE IS SESSION', session);
 
-  return <Box>{data?.user?.username?<Chat /> : <Auth />}</Box>;
+  const reloadSession = () => {};
+
+  return(
+     <Box>{session?.user?.username?( <Chat />  
+  ) : (
+  <Auth session={session} reloadSession={ reloadSession }/>
+  )}
+  </Box>
+  );
   };
 
 export async function getServerSideProps(context: NextPageContext) {
