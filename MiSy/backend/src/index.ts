@@ -11,7 +11,8 @@ async function main(typeDefs, resolvers) {
     resolvers,
     csrfPrevention: true,
     cache: 'bounded',
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), 
+      ApolloServerPluginLandingPageLocalDefault({ embed: true })],
   });
   await server.start();
   server.applyMiddleware({ app });
