@@ -4,10 +4,9 @@ const resolvers = {
 Query:{
 searchUsers: () => {},
 },
-Mutatiion: {
+Mutation: {
 createUsername: () => {} ,
 },
-Subscription:{},
 };
 
 export default resolvers;
