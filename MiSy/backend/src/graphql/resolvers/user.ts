@@ -6,13 +6,30 @@ searchUsers: () => {},
 },
 Mutation: {
 createUsername: async(_: any, args: { username: string } , 
-    context: GraphQLContext ):Promise <> => {
+    context: GraphQLContext ):Promise <CreateUsernameResponse> => {
 
     const { username } = args;
     const { session, prisma} = context;
+    
+    if (!session?.user) {
+    return {
 
-    console.log("HEY AT API", username);
-    console.log ('HERE IS CONTEXT', context);
+      error: 'Not authorized',
+      
+        
+    };
+    }
+const { id } = session.user;
+
+
+try {
+}catch (error){
+    console.log("createUsername error", error);
+return {
+error:error?.message,
+
+}
+}
 } ,
 },
 };
