@@ -4,22 +4,35 @@ import { Session } from 'next-auth';
 import { signIn } from 'next-auth/react';
 import { ChatIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import UserOperations from '../../graphql/operations/user';
+import { createUsernameData, createUsernameVariables } from '../../util/types';
 
 interface IAuthProps {
   session: Session | null;
   reloadSession: () => void;
 }
-
 const Auth: React.FunctionComponent<IAuthProps> = ({
   session,
   reloadSession,
 }) => {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState('');
+
+  const [createUsername, { data, loading, error }] = useMutation<
+    createUsernameData,
+    createUsernameVariables
+  >(UserOperations.Mutations.createUsername);
+
+console.log('HERE IS DATA',data,loading,error);
+
+
+
   const onsubmit = async () => {
+   if(!username) return;
     try {
-/**createUsername mutation to send our username to the GraphQl Api */
+      await createUsername({ variables: { username } });
     } catch (error) {
-console.log('onSubmit error', error);
+      console.log('onSubmit error', error);
     }
   };
   return (
@@ -27,13 +40,15 @@ console.log('onSubmit error', error);
       <Stack spacing={8} align="center">
         {session ? (
           <>
-            <Text fontSize= "3xl">Create a Username</Text>
+            <Text fontSize="3xl">Create a Username</Text>
             <Input
               placeholder="Enter your username"
               value={username}
               onChange={(event) => setUsername(event.target.value)}
             />
-            <Button width="100%" onClick ={ onsubmit }>Save</Button>
+            <Button width="100%" onClick={onsubmit}>
+              Save
+            </Button>
           </>
         ) : (
           <>
