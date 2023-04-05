@@ -6,21 +6,21 @@ import { ChatIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import UserOperations from '../../graphql/operations/user';
-import { createUsernameData, createUsernameVariables } from '../../util/types';
+import { CreateUsernameData, CreateUsernameVariables } from "../../util/types";
 
-interface IAuthProps {
+interface AuthProps {
   session: Session | null;
   reloadSession: () => void;
 }
-const Auth: React.FunctionComponent<IAuthProps> = ({
+const Auth: React.FunctionComponent<AuthProps> = ({
   session,
   reloadSession,
 }) => {
   const [username, setUsername] = useState('');
 
   const [createUsername, { data, loading, error }] = useMutation<
-    createUsernameData,
-    createUsernameVariables
+  CreateUsernameData,
+  CreateUsernameVariables
   >(UserOperations.Mutations.createUsername);
 
 console.log('HERE IS DATA',data,loading,error);

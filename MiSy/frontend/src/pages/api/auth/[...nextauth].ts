@@ -14,11 +14,11 @@ export default NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-      callbacks: {
-      async session({ session, token, user }) {
-        console.log ('INSUDE OF THE SESSION CALLBACK');
-      return { ...session, user: { ...session.user, ...user }};
+  callbacks: {
+    async session({ session, token, user }) {
+     return { ...session, user: { ...session.user, ...user  }};
+
+     
     },
   },
 });
-
