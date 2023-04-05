@@ -12,7 +12,7 @@ export interface GraphQLContext {
  */
 
 export interface Session {
-user: User;
+user?: User;
 expires: ISODateString;
 }
 
@@ -20,7 +20,10 @@ expires: ISODateString;
 export interface User {
     id: string;
     username: string;
-    image:string;
+    email: string;
+    emailVerified: boolean;
+    image: string;
+    name: string;
 }
 
 

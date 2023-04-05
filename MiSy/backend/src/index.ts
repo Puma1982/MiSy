@@ -8,11 +8,10 @@ import express from 'express';
 import http from 'http';
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
-import { getSession} from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import { PrismaClient } from '@prisma/client';
 import * as dotenv from 'dotenv';
-import { GraphQLContext } from './util/types';
-
+import { GraphQLContext, Session } from './util/types';
 
 async function main() {
   dotenv.config();
@@ -23,28 +22,24 @@ async function main() {
     resolvers,
   });
 
-const corsOptions = {
-  origin: process.env.CLIENT_ORIGIN,
-  credentials: true,
-};
+  const corsOptions = {
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  };
 
-/**https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/querying-the-database-typescript-mongodb */
-/**Context parameters */
-const prisma = new PrismaClient()
-//const pubsub
-  
-
+  /**https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/querying-the-database-typescript-mongodb */
+  /**Context parameters */
+  const prisma = new PrismaClient();
+  //const pubsub
 
   const server = new ApolloServer({
     schema,
     csrfPrevention: true,
     cache: 'bounded',
-    context: async ({ req, res }): Promise <GraphQLContext> => {
-      const session = await getSession ({ req });
+    context: async ({ req, res }): Promise<GraphQLContext> => {
+      const session = await getSession({ req }) as Session;
 
-
-
-      return { session,prisma };
+      return { session, prisma };
     },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
