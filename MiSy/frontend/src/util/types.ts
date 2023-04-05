@@ -1,10 +1,11 @@
-export interface createUsernameData {
-    createUsername: {
-     success: boolean;
-      error : string;
-    };
-  }
+export interface CreateUsernameData {
+  createUsername: {
+    success: boolean;
+    error: string;
+  };
+}
   
-  export interface createUsernameVariables {
+  export interface CreateUsernameVariables {
     username: string;
   }
+  
