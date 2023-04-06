@@ -1,58 +1,62 @@
-import { CreateUsernameResponse, GraphQLContext } from '../../util/types';
+import { User } from "@prisma/client";
+import { GraphQLError } from "graphql";
+import { verifyAndCreateUsername} from "../../util/functions"
+import { CreateUsernameResponse, GraphQLContext } from "../../util/types";
 
 const resolvers = {
   Query: {
-    searchUsers: () => {},
-  },
-  Mutation: {
-    createUsername: async (
+    searchUsers: async function searchUsers(
       _: any,
       args: { username: string },
       context: GraphQLContext
-    ): Promise<CreateUsernameResponse> => {
-      const { username } = args;
+    ): Promise<Array<User>> {
+      const { username: searchedUsername } = args;
+      const { prisma, session } = context;
+
+      if (!session?.user) {
+        throw new GraphQLError("Not authorized");
+      }
+
+      const {
+        user: { username: myUsername },
+      } = session;
+
+      try {
+        const users = await prisma.user.findMany({
+          where: {
+            username: {
+              contains: searchedUsername,
+              not: myUsername,
+              mode: "insensitive",
+            },
+          },
+        });
+
+        return users;
+      } catch (error: any) {
+        console.log("error", error);
+        throw new GraphQLError(error?.message);
+      }
+    },
+  },
+  Mutation: {
+    createUsername: async function createUsername(
+      _: any,
+      args: { username: string },
+      context: GraphQLContext
+    ): Promise<CreateUsernameResponse> {
       const { session, prisma } = context;
 
       if (!session?.user) {
         return {
-          error: 'Not authorized',
+          error: "Not authorized",
         };
       }
-      const { id: userId } = session.user;
 
-      try {
-        /**
-         * Check that username is not taken
-         */
-        const existingUser = await prisma.user.findUnique({
-          where: {
-            username,
-          },
-        });
-        if (existingUser) {
-          return {
-            error: 'Username already exist.Try another one',
-          };
-        }
-        /**
-         * Update Usern
-         */
-        await prisma.user.update({
-          where: {
-            id: userId,
-          },
-          data: {
-            username,
-          },
-        });
+      const { id } = session.user;
+      const { username } = args;
 
-        return { success: true};
-      } catch (error: any) {
-        console.log('createUsername error', error);
-        return {
-          error: error?.message,
-        };
-      }
+      return await verifyAndCreateUsername({ userId: id, username }, prisma);
     },
   },
 };
